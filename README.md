@@ -10,4 +10,4 @@ fork from  https://github.com/jaegertracing/docker-protobuf and https://github.c
 ## Usage
 ```
 
-docker run -it --rm -v"${PWD}":/workdir achuala.in/pb-gen  --proto_path=/workdir/proto --go_out="module=${PACKAGE}:/workdir" --validate_out="module=${PACKAGE},lang=go:/workdir" api.proto
+docker run -it --rm -v"${PWD}":/workdir achuala/pb-gen  --proto_path=/workdir/proto --go_out="module=${PACKAGE}:/workdir" --validate_out="module=${PACKAGE},lang=go:/workdir" api.proto
