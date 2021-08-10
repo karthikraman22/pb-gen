@@ -1,6 +1,5 @@
 # Arguments to Env variables
 ARG GO_VERSION=1.16.7
-ARG ALPINE_VERSION=3.14
 ARG UBUNTU_VERSION=20.04
 ARG PROTOBUF_RELEASE_TAG=3.17.3
 ARG GRPC_GATEWAY_VERSION=2.5.0
@@ -63,15 +62,15 @@ RUN upx --lzma $(find /out/usr/bin/ \
 
 RUN find /out -name "*.a" -delete -or -name "*.la" -delete
 
+
+
+# Final assembly
+
 FROM ubuntu:${UBUNTU_VERSION}
 
 COPY --from=packer /out/ /
 
 LABEL maintainer="Karthik Raman"
-
-RUN apt-get update && \
-    apt-get -y install bash 
-
 COPY protoc-wrapper /usr/bin/protoc-wrapper
 ENTRYPOINT ["protoc-wrapper", "-I/usr/include"]
 
