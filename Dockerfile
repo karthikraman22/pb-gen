@@ -1,11 +1,11 @@
 # Arguments to Env variables
-ARG GO_VERSION=1.17.8
+ARG GO_VERSION=1.18.1
 ARG UBUNTU_VERSION=20.04
-ARG PROTOBUF_RELEASE_TAG=3.19.4
-ARG GRPC_GATEWAY_VERSION=2.8.0
+ARG PROTOBUF_RELEASE_TAG=3.20.1
+ARG GRPC_GATEWAY_VERSION=2.10.0
 ARG UPX_VERSION=3.96
-ARG GRPC_VERSION=1.44.0
-ARG GRPC_GO_VERSION=1.45.0
+ARG GRPC_VERSION=1.46.0
+ARG GRPC_GO_VERSION=1.46.0
 ARG PROTOC_GEN_VALIDATE_VERSION=0.6.7
 
 FROM golang:${GO_VERSION} as go_builder
@@ -36,13 +36,13 @@ RUN git clone --recursive --depth=1 "https://github.com/googleapis/googleapis" /
     install -D $(find /googleapis/google/api -maxdepth 1 -name '*.proto') -t /out/usr/include/google/api && \
     rm -rf /googleapis
 
-RUN go get -u google.golang.org/protobuf/cmd/protoc-gen-go && \
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
     install -Ds /go/bin/protoc-gen-go /out/usr/bin/
 
-RUN go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
     install -Ds /go/bin/protoc-gen-go-grpc /out/usr/bin/
 
-RUN go get -u github.com/srikrsna/protoc-gen-gotag && \
+RUN go install github.com/srikrsna/protoc-gen-gotag@latest && \
     install -Ds /go/bin/protoc-gen-gotag /out/usr/bin/
 
 
@@ -50,9 +50,9 @@ RUN go get -u github.com/srikrsna/protoc-gen-gotag && \
 
 #RUN go get -d github.com/envoyproxy/protoc-gen-validate && make build -C /go/pkg/mod/github.com/envoyproxy/protoc-gen-validate/
 RUN set -e && \ 
-    go get -u github.com/envoyproxy/protoc-gen-validate@v${PROTOC_GEN_VALIDATE_VERSION} && \
+    go install github.com/envoyproxy/protoc-gen-validate@v${PROTOC_GEN_VALIDATE_VERSION} && \
     cd /go/pkg/mod/github.com/envoyproxy/protoc-gen-validate@v${PROTOC_GEN_VALIDATE_VERSION} && \
-    make build && \
+    #make build && \
     install -Ds /go/bin/protoc-gen-validate /out/usr/bin/ && \
     mkdir -p /out/usr/include/github.com/envoyproxy/protoc-gen-validate/validate && \
     install -D ./validate/validate.proto /out/usr/include/github.com/envoyproxy/protoc-gen-validate/validate 
@@ -86,5 +86,6 @@ COPY --from=packer /out/ /
 
 LABEL maintainer="Karthik Raman"
 COPY protoc-wrapper /usr/bin/protoc-wrapper
-ENTRYPOINT ["protoc-wrapper", "-I/usr/include"]
+RUN chmod u+x /usr/bin/protoc-wrapper
+ENTRYPOINT ["/usr/bin/protoc-wrapper", "-I/usr/include"]
 
