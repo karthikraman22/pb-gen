@@ -42,8 +42,6 @@ RUN go install github.com/srikrsna/protoc-gen-gotag@latest && \
     install -Ds /go/bin/protoc-gen-gotag /out/usr/bin/
 
 
-
-
 #RUN go get -d github.com/envoyproxy/protoc-gen-validate && make build -C /go/pkg/mod/github.com/envoyproxy/protoc-gen-validate/
 RUN set -e && \ 
     go install github.com/envoyproxy/protoc-gen-validate@v${PROTOC_GEN_VALIDATE_VERSION} && \
